@@ -9,14 +9,14 @@ For generic SDE models, Monte Carlo often relies on Euler-Maruyama discretisatio
 
 The Euler--Maruyama discretisation scheme divides the time interval $[0,T]$ into $n$ timesteps of length $\Delta t=\frac{T}{n}$ and generates values of the SDE at time $t_{j+1}$, where $j=0,1,\ldots,n-1$, from known value(s) at $t_j$. For example, a one-dimensional, diffusion based SDE writes:
 
-$$
+```math
 X_{j+1}
 =
 X_j + f(t_j, X_{t_j})\,\Delta t
 +
 g(t_j, X_{t_j})
 \left(W_{t_{j+1}} - W_{t_j}\right)
-$$
+```
 
 ### 1.2 Monte Carlo Variance Reduction
 
@@ -27,7 +27,7 @@ Let $X$ and $Y$ be random variables such that $E(X)$ is known.
 Given a sequence $\{(X_j,Y_j)\}_{j=1}^M$ of i.i.d. samples from the joint
 distribution of $(X,Y)$, define
 
-$$
+```math
 Y_j(b)
 =
 Y_j - b\bigl(X_j - E(X)\bigr),
@@ -35,7 +35,8 @@ Y_j - b\bigl(X_j - E(X)\bigr),
 b \in \mathbb{R},
 \qquad
 j = 1,\ldots,M.
-$$
+```
+
 The equation should resemble an OLS regression model. Therefore, the coefficient $b$ is optimal at $b=b^*$, where $b^*=\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)}$, which minimizes the variance $\operatorname{Var}\!\left(\hat{Y}(b^*)\right)$. This again resembles the expression of $\beta$ in a regression model.
 
 Two classic examples from Glasserman (2004) were implemented:
@@ -51,47 +52,50 @@ In general, antithetic variates can be constructed through the inverse CDF metho
 
 For the standard normal case, this construction simplifies. Let $\Phi$ denote the standard normal CDF. If $Z = \Phi^{-1}(U)$, then the antithetic normal shock is $Z^A = \Phi^{-1}(1-U)$. By symmetry of the standard normal distribution, $\Phi^{-1}(1-U) = -\Phi^{-1}(U)$, so $Z^A = -Z$.
 
-Therefore, in the Black-Scholes Monte Carlo implementation, explicitly drawing from a uniform distribution and applying the inverse CDF is not needed. Instead, drawing standard normal shocks directly and pair each shock with its negative is more efficient.
+Therefore, in the Black-Scholes Monte Carlo implementation, explicitly drawing from a uniform distribution and applying the inverse CDF is not needed. Instead, drawing standard normal shocks directly and pairing each shock with its negative is more efficient.
 
 #### 1.2.3 Stratified Sampling
 Stratified sampling refers broadly to any sampling mechanism that constrains the fraction of observations drawn from specific subsets, or strata, of the sample space. It is particularly useful when we want to set specific targets to sampling.
 
 In the code, the shocks used in the path simulation are stratified. The unit interval is first divided into $L$ equal-probability strata,
 
-$$
+```math
 \left[\frac{j}{L}, \frac{j+1}{L}\right), \qquad j=0,\dots,L-1.
-$$
+```
 
 Within each stratum, draw
 
-$$
+```math
 U_j \sim \mathcal{U}\left(\frac{j}{L}, \frac{j+1}{L}\right),
-$$
+```
+
 then transform it into a shock using the inverse CDF.
 
 The stratified estimator averages within each stratum and combines the stratum means:
 
-$$
+```math
 \hat{V}_{\text{strat}}
 =
 \sum_{j=1}^{L} p_j \bar{Y}_j.
-$$
+```
+
 For equal-probability strata, $p_j=1/L$, so
 
-$$
+```math
 \hat{V}_{\text{strat}}
 =
 \frac{1}{L}\sum_{j=1}^{L}\bar{Y}_j.
-$$
+```
+
 And, therefore, the variance of stratified Monte Carlo estimator is
 
-$$
+```math
 \operatorname{Var}(\hat{V}_{\text{strat}})
 =
 \sum_{j=1}^{L}
 \frac{p_j^2}{n_j}
 \operatorname{Var}(Y\mid U\in A_j).
-$$
+```
 
 The stratified variance formula is used only when each payoff has one clear stratum, i.e., `n_steps = 1`. For multi-step path simulations, the ordinary sample standard error is reported even when shocks are stratified marginally.
 
@@ -102,9 +106,10 @@ For American options, the key objective is to solve for the stopping rule (i.e.,
 2. Compute the realised future cashflow from continuing beyond time $t$, then discount it back to time $t$. This represents the value of not exercising at time $t$ and is used as the dependent variable $Y$. To improve efficiency, only the in-the-money paths at time $t$ are included in the regression analysis, since these are the paths where immediate exercise has positive value and must be compared against continuation.
 3. Set up a regression with the simulated state variable at time $t$ as independent variable $X$:
 
-$$
+```math
     E[Y|X]=\alpha+\beta_1X+\beta_2X^2
-$$
+```
+
 The fitted conditional expectation is the estimated continuation value. In the code, the default polynomial degree is 2, but the user can choose to increase the degree to improve accuracy.
 
 4. Compare the continuation value and the early termination value. The value of the option at a particular gird point is $\max(\text{termination}, \text{continuation})$.
@@ -120,48 +125,51 @@ The key idea is to use the Brownian bridge distribution between two simulated lo
 
 We are interested in the probability which the barrier is crossed between time $t$ and time $t+1$. This is best explain via an example. For an "up" barrier option, there are 2 subsets(scenarios):
 
-$$
+```math
 \begin{cases}
 P\left(\max_{u\in[t,t+\Delta t]}X_u\ge B
    \mid X_t=x, X_{t+\Delta t}=y\right), & X_{t} < B   \text{and}   X_{t+1} < B,\\
 1, & \text{otherwise}.
 \end{cases}
-$$
+```
+
 Recall that if $X$ is a continuous Gaussian martingale and $\tau_B$ is the first hitting time of the barrier level $B$, then the process reflected after $\tau_B$,
 
-$$
+```math
 X'_t =
 \begin{cases}
 X_t, & t \leq \tau_B,\\
 2B-X_t, & t > \tau_B,
 \end{cases}
-$$
+```
+
 is equal to $X$ in law. It is much harder to evaluate directly the density of paths that travel from $X_t$ to $B$ and then back to $X_{t+\Delta t}$. The reflection principle replaces this path-dependent event with an unrestricted transition from $X_t$ to the reflected endpoint $X'_{t+\Delta t}=2B-X_{t+\Delta t}$.
 
 We want to compute the conditional probability that the process hits the barrier
 between the two monitoring dates:
 
-$$
+```math
 P\left(
 \max_{u\in[t,t+\Delta t]}X_u \geq B
 \mid X_t=x,\ X_{t+\Delta t}=y
 \right).
-$$
+```
 
 Let
 
-$$
+```math
 \tau_B=\inf\{u\geq t:X_u=B\}
-$$
+```
+
 be the first hitting time of the barrier. The event of interest is
 
-$$
+```math
 \{\tau_B\leq t+\Delta t\}.
-$$
+```
 
 Using conditional probability in density form,
 
-$$
+```math
 P\left(
 \tau_B\leq t+\Delta t
 \mid X_t=x,\ X_{t+\Delta t}=y
@@ -173,51 +181,51 @@ P\left(\tau_B\leq t+\Delta t,\ X_{t+\Delta t}=y
 }{
 P\left(X_{t+\Delta t}=y\mid X_t=x\right)
 }.
-$$
+```
 
 The denominator is the unrestricted transition density from $x$ to $y$:
 
-$$
+```math
 p(\Delta t,x,y)
 =
 \frac{1}{\sigma\sqrt{2\pi\Delta t}}
 \exp\left(
 -\frac{(y-x)^2}{2\sigma^2\Delta t}
 \right).
-$$
+```
 
 For the numerator, we use the reflection principle. Any path starting at $x<B$
 that hits $B$ before $t+\Delta t$ and ends at $y<B$ can be reflected after its
 first hitting time $\tau_B$. The reflected terminal value is
 
-$$
+```math
 X'_{t+\Delta t}=2B-y.
-$$
+```
 
 Therefore, paths from $x$ to $y$ that hit $B$ are in one-to-one correspondence
 with unrestricted paths from $x$ to $2B-y$. Hence,
 
-$$
+```math
 P\left(\tau_B\leq t+\Delta t,\ X_{t+\Delta t}=y
 \mid X_t=x\right)
 =
 p(\Delta t,x,2B-y).
-$$
+```
 
 Thus,
 
-$$
+```math
 P\left(
 \tau_B\leq t+\Delta t
 \mid X_t=x,\ X_{t+\Delta t}=y
 \right)
 =
 \frac{p(\Delta t,x,2B-y)}{p(\Delta t,x,y)}.
-$$
+```
 
 Substituting the Gaussian transition densities,
 
-$$
+```math
 P\left(
 \tau_B\leq t+\Delta t
 \mid X_t=x,\ X_{t+\Delta t}=y
@@ -232,11 +240,11 @@ P\left(
 -\frac{(y-x)^2}{2\sigma^2\Delta t}
 \right)
 }.
-$$
+```
 
 After simplification, 
 
-$$
+```math
 P\left(
 \tau_B\leq t+\Delta t
 \mid X_t=x,\ X_{t+\Delta t}=y
@@ -245,11 +253,11 @@ P\left(
 \exp\left(
 -\frac{2(B-x)(B-y)}{\sigma^2\Delta t}
 \right)=\hat{p}_i^{\text{hit}}.
-$$
+```
 
 Finally, the conditional expectation of a knock-out barrier option with payoff function $k(\hat{X})$ is:
 
-$$
+```math
 \begin{aligned}
 &\mathbb{E}\left[
 k(\hat{X}(n))
@@ -269,7 +277,7 @@ P\left(
 \prod_{i=0}^{n-1}
 \left(1-p_i^{\mathrm{hit}}\right).
 \end{aligned}
-$$
+```
 
 ## 2. Finite Difference Method for PDEs and PIDEs
 
@@ -277,34 +285,34 @@ $$
 The Black--Scholes PDE decomposes into a *time* component and a
 *spatial* component:
 
-$$
+```math
   \underbrace{\frac{\partial f}{\partial t}}_{\text{Time}}
   + \underbrace{\frac{\partial f}{\partial S}(r-q)S
     + \frac{1}{2}\frac{\partial^{2}f}{\partial S^{2}}\sigma^{2}S^{2}
     - rf}_{\text{Spatial}}
   = 0.
-$$
+```
 
 #### 2.1.1 Transform Spatial Terms into a 3-State Equation
 
 Denote $V_{\tau,i}=f(T-\tau,S_i)$, where $\tau=T-t$ and define the spatial operator
 
-$$
+```math
   \mathcal{L}_\tau(V_{\tau,i}) = a_i\,V_{\tau,i-1} + b_i\,V_{\tau,i} + c_i\,V_{\tau,i+1}.
-$$
+```
 
 Using central finite differences for the spatial derivatives:
 
-$$
+```math
   \frac{\partial f}{\partial S} \approx \frac{V_{i+1}-V_{i-1}}{2\Delta S},
   \qquad
   \frac{\partial^{2}f}{\partial S^{2}} \approx
     \frac{V_{i+1}-2V_{i}-V_{i-1}}{\Delta S^{2}}.
-$$
+```
 
 Substituting into the spatial part of the Black--Scholes PDE:
 
-$$
+```math
 \begin{aligned}
   \mathcal{L}_\tau(V_{i})
   &= \frac{V_{i+1}-V_{i-1}}{2\Delta S}(r-q)S
@@ -314,18 +322,18 @@ $$
      + \frac{\sigma^{2}S^{2}}{2\Delta S^{2}}(V_{i+1}-2V_{i}-V_{i-1})
      - rV_{i}.
 \end{aligned}
-$$
+```
 
 Collecting terms by node gives:
 
-$$
+```math
   \mathcal{L}_\tau(V_{i})
   = \underbrace{\left[\frac{S^{2}\sigma^{2}}{2\Delta S^{2}}
       - (r-q)\frac{S}{2\Delta S}\right]}_{a_i}\!V_{i-1}
   + \underbrace{\left[-r - \frac{S^{2}\sigma^{2}}{\Delta S^{2}}\right]}_{b_i}\!V_{i}
   + \underbrace{\left[\frac{S^{2}\sigma^{2}}{2\Delta S^{2}}
       + (r-q)\frac{S}{2\Delta S}\right]}_{c_i}\!V_{i+1}.
-$$
+```
 
 #### 2.1.2 Variable Transformation: Time Domain
 
@@ -333,96 +341,97 @@ The PDE is solved *backwards* from the terminal condition, so $t$ is
 descending.  It is more natural to work with *time to maturity*
 $\tau = T - t$, which is ascending.  Since
 
-$$
+```math
   \frac{\partial f}{\partial t} = -\frac{\partial f}{\partial\tau},
-$$
+```
+
 the PDE becomes
 
-$$
+```math
   -\frac{\partial f}{\partial\tau} + \mathcal{L}_\tau(V_{i}) = 0
    \Longrightarrow 
   \frac{\partial f}{\partial\tau} = \mathcal{L}_\tau(V_{i}).
-$$
+```
 
 Discretising in $\tau$:
 
-$$
+```math
   \frac{\partial f}{\partial\tau}
   \approx \frac{V_{\tau+1,i}-V_{\tau,i}}{\Delta t}
    \Longrightarrow 
   \frac{V_{\tau+1,i}-V_{\tau,i}}{\Delta t} = \mathcal{L}_\tau(V_{i}).
-$$
+```
 
 #### 2.1.3 Choose a Time-Stepping Scheme
 **Explicit scheme  ($\theta=0$)**
 
 Reference time point at $\tau$:
 
-$$
+```math
       \frac{V_{\tau+1,i}-V_{\tau,i}}{\Delta t} = \mathcal{L}_\tau(V_{\tau,i}).
-$$
+```
 
 **Implicit scheme  ($\theta=1$)**
 
 Reference time point at $\tau+1$:
 
-$$
+```math
       \frac{V_{\tau+1,i}-V_{\tau,i}}{\Delta t} = \mathcal{L}_\tau(V_{\tau+1,i}).
-$$
+```
 
 **Crank--Nicolson  ($\theta=0.5$)**
 
 Reference time point at $\tau+\tfrac{1}{2}$:
 
-$$
+```math
       \frac{V_{\tau+1,i}-V_{\tau,i}}{\Delta t}
       = \tfrac{1}{2}\!\left[\mathcal{L}_\tau(V_{\tau,i})+\mathcal{L}_\tau(V_{\tau+1,i})\right].
-$$
+```
 
 Letting the reference time point be $\tau+\theta$ yields the **general $\theta$-scheme**:
 
-$$
+```math
   \frac{V_{\tau+1,i}-V_{\tau,i}}{\Delta t}
   = (1-\theta)\,\mathcal{L}_\tau(V_{\tau,i}) + \theta\,\mathcal{L}_\tau(V_{\tau+1,i}).
-$$
+```
 
 Rearranging the theta-scheme:
 
-$$
+```math
   V_{\tau+1,i} - \Delta t\,\theta\,\mathcal{L}_\tau(V_{\tau+1,i})
   = V_{\tau,i} + \Delta t(1-\theta)\,\mathcal{L}_\tau(V_{\tau,i}).
-$$
+```
 
 Substituting $\mathcal{L}_\tau(V_{\tau,i}) = a_i\,V_{\tau,i-1}+b_i\,V_{\tau,i}+c_i\,V_{\tau,i+1}$
 on both sides:
 
 **LHS** (unknowns at $\tau+1$):
 
-$$
+```math
   (-\Delta t\,\theta\,a_i)\,V_{\tau+1,i-1}
   + (1-\Delta t\,\theta\,b_i)\,V_{\tau+1,i}
   + (-\Delta t\,\theta\,c_i)\,V_{\tau+1,i+1}
-$$
+```
 
 **RHS** (known values at $\tau$):
 
-$$
+```math
   (\Delta t(1-\theta)\,a_i)\,V_{\tau,i-1}
   + (1+\Delta t(1-\theta)\,b_i)\,V_{\tau,i}
   + (\Delta t(1-\theta)\,c_i)\,V_{\tau,i+1}
-$$
+```
 
 Assembling across all interior nodes $i = 1,\dots,N-1$, the system takes the
 matrix form
 
-$$
+```math
   A\,\mathbf{V}_{\tau+1} = B\,\mathbf{V}_{\tau},
-$$
+```
 
 where $\mathbf{V}_{\tau} = (V_{\tau,1},\dots,V_{\tau,N-1})^{\!\top}$ and the
 two $(N-1)\times(N-1)$ tridiagonal matrices are
 
-$$
+```math
   A =
   \begin{pmatrix}
     1-\Delta t\theta b_i & -\Delta t\theta c_i      &                  &        \\
@@ -430,8 +439,9 @@ $$
                     & \ddots              & \ddots           & \ddots \\
                     &                     & -\Delta t\theta a_i   & 1-\Delta t\theta b_i
   \end{pmatrix},
-$$
-$$
+```
+
+```math
   B =
   \begin{pmatrix}
     1+\Delta t(1-\theta)b_i   & \Delta t(1-\theta)c_i   &                      &        \\
@@ -439,7 +449,7 @@ $$
                          & \ddots             & \ddots               & \ddots \\
                          &                    & \Delta t(1-\theta)a_i     & 1+\Delta t(1-\theta)b_i
   \end{pmatrix}.
-$$
+```
 
 Boundary corrections (from 2.1.4) are added to the first and last entries of
 $B\,\mathbf{V}_{\tau}$ as needed.
@@ -459,9 +469,9 @@ For American (also applicable to Bermudan) options, the early exercise decision 
 The tridiagonal system is solved at each time step for
 $\mathbf{V}_{\tau+1}$:
 
-$$
+```math
   \mathbf{V}_{\tau+1} = A^{-1}\!\left(B\,\mathbf{V}_{\tau}
     + \mathbf{g}_{\tau,\tau+1}\right),
-$$
+```
 
 where $\mathbf{g}_{\tau,\tau+1}$ collects any boundary correction terms.  Because $A$ is tridiagonal, the solve is carried out in $\mathcal{O}(N)$ operations via the **Thomas algorithm**.
