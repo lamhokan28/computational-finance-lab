@@ -37,7 +37,7 @@ b \in \mathbb{R},
 j = 1,\ldots,M.
 ```
 
-The equation should resemble an OLS regression model. Therefore, the coefficient $b$ is optimal at $b=b^*$, where $b^*=\frac{\operatorname{Cov}(X,Y)}{\operatorname{Var}(X)}$, which minimizes the variance $\operatorname{Var}\!\left(\hat{Y}(b^*)\right)$. This again resembles the expression of $\beta$ in a regression model.
+The equation should resemble an OLS regression model. Therefore, the coefficient $b$ is optimal at $b=b^*$, where $b^*=\frac{\mathrm{Cov}(X,Y)}{\mathrm{Var}(X)}$, which minimizes the variance $\mathrm{Var}\!\left(\hat{Y}(b^*)\right)$. This again resembles the expression of $\beta$ in a regression model.
 
 Two classic examples from Glasserman (2004) were implemented:
 - The discounted stock price was used as a control variate for the valuation of a European call option.
@@ -90,11 +90,11 @@ For equal-probability strata, $p_j=1/L$, so
 And, therefore, the variance of stratified Monte Carlo estimator is
 
 ```math
-\operatorname{Var}(\hat{V}_{\text{strat}})
+\mathrm{Var}(\hat{V}_{\text{strat}})
 =
 \sum_{j=1}^{L}
 \frac{p_j^2}{n_j}
-\operatorname{Var}(Y\mid U\in A_j).
+\mathrm{Var}(Y\mid U\in A_j).
 ```
 
 The stratified variance formula is used only when each payoff has one clear stratum, i.e., `n_steps = 1`. For multi-step path simulations, the ordinary sample standard error is reported even when shocks are stratified marginally.
