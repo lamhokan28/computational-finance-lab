@@ -37,7 +37,13 @@ b \in \mathbb{R},
 j = 1,\ldots,M.
 ```
 
-The equation should resemble an OLS regression model. Therefore, the coefficient $b$ is optimal at $b=b^*$, where $b^*=\frac{\mathrm{Cov}(X,Y)}{\mathrm{Var}(X)}$, which minimizes the variance $\mathrm{Var}\!\left(\hat{Y}(b^*)\right)$. This again resembles the expression of $\beta$ in a regression model.
+The equation should resemble an OLS regression model. The variance-minimising coefficient is:
+
+```math
+b^* = \frac{\mathrm{Cov}(X,Y)}{\mathrm{Var}(X)}.
+```
+
+Using this value minimises the variance of the adjusted estimator, so the role of $b^*$ is similar to the role of a regression beta coefficient.
 
 Two classic examples from Glasserman (2004) were implemented:
 - The discounted stock price was used as a control variate for the valuation of a European call option.
