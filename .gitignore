@@ -1,0 +1,15 @@
+__pycache__/
+.DS_Store
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.venv/
+dist/
+build/
+*.egg-info/
+# Local project layers not published yet
+src/derivlab/experiments/
+tests/
+src/derivlab/pricers/fourier/
