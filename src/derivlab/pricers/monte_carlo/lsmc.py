@@ -10,7 +10,7 @@ from derivlab.core.enums import OptionKind
 from derivlab.core.results import PricingResult
 from derivlab.models.black_scholes import BlackScholesModel
 from derivlab.pricers.monte_carlo.engine import SimulationConfig
-from derivlab.products.american import AmericanOption
+from derivlab.products.american_option import AmericanOption
 
 
 @dataclass(frozen=True)

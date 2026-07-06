@@ -3,9 +3,9 @@ from __future__ import annotations
 from math import exp
 
 from derivlab.core.enums import OptionKind
-from derivlab.products.american import AmericanOption
-from derivlab.products.barrier import BarrierOption, BarrierDirection
-from derivlab.products.european import EuropeanOption
+from derivlab.products.american_option import AmericanOption
+from derivlab.products.barrier_option import BarrierOption, BarrierDirection
+from derivlab.products.european_option import EuropeanOption
 
 
 def lower_boundary(option: EuropeanOption | AmericanOption | BarrierOption, kind: OptionKind, s_min: float, strike: float, rate: float, dividend: float, tau: float) -> float:

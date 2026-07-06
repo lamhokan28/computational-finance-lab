@@ -9,9 +9,9 @@ import numpy as np
 from derivlab.core.results import PricingResult
 from derivlab.core.enums import StatisticalDistribution
 from derivlab.models.black_scholes import BlackScholesModel
-from derivlab.products.asian import AsianOption
-from derivlab.products.barrier import BarrierOption
-from derivlab.products.european import EuropeanOption
+from derivlab.products.asian_option import AsianOption
+from derivlab.products.barrier_option import BarrierOption
+from derivlab.products.european_option import EuropeanOption
 
 
 @dataclass(frozen=True)

@@ -13,9 +13,9 @@ from derivlab.core.results import PricingResult
 from derivlab.models.black_scholes import BlackScholesModel
 from derivlab.pricers.analytic.black_scholes import geometric_asian_price
 from derivlab.pricers.monte_carlo.engine import MonteCarloPricer, SimulationConfig
-from derivlab.products.asian import AsianOption
-from derivlab.products.barrier import BarrierOption
-from derivlab.products.european import EuropeanOption
+from derivlab.products.asian_option import AsianOption
+from derivlab.products.barrier_option import BarrierOption
+from derivlab.products.european_option import EuropeanOption
 
 ### Antithetic Variates ###
 class AntitheticMonteCarloPricer(MonteCarloPricer):

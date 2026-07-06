@@ -9,7 +9,7 @@ from derivlab.core.enums import BarrierDirection, BarrierKnock
 from derivlab.core.results import PricingResult
 from derivlab.models.black_scholes import BlackScholesModel
 from derivlab.pricers.monte_carlo.engine import SimulationConfig
-from derivlab.products.barrier import BarrierOption
+from derivlab.products.barrier_option import BarrierOption
 
 
 class BarrierCrossingCorrectionMonteCarloPricer:

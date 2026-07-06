@@ -12,9 +12,9 @@ from derivlab.pricers.analytic.black_scholes import black_scholes_price
 from derivlab.pricers.pde.boundary_conditions import lower_boundary, upper_boundary
 from derivlab.pricers.pde.grids import GridConfig
 from derivlab.pricers.pde.solver import solve_tridiagonal
-from derivlab.products.american import AmericanOption
-from derivlab.products.barrier import BarrierOption
-from derivlab.products.european import EuropeanOption
+from derivlab.products.american_option import AmericanOption
+from derivlab.products.barrier_option import BarrierOption
+from derivlab.products.european_option import EuropeanOption
 
 Boundary = Callable[[float], float]
 Projection = Callable[[np.ndarray, np.ndarray], np.ndarray]
