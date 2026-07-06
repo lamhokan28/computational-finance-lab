@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "A numerical derivative pricing lab for Black-Scholes methods and model extensions."
 readme = "README.md"
 requires-python = ">=3.10"
+license = { file = "LICENSE" }
 dependencies = [
   "numpy>=1.24",
   "scipy>=1.11",
@@ -28,4 +29,3 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-
